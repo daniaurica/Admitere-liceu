@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admitere Liceu - Sistem de Gestionare</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>📚 Admitere Liceu</h1>
+                <p>Sistem de Gestionare a Candidaților</p>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+                <button class="tab-btn" data-tab="register">Înregistrare</button>
+                <button class="tab-btn" data-tab="ranking">Clasament</button>
+                <button class="tab-btn" data-tab="search">Căutare Candidat</button>
+            </nav>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 Statistici Generale</h2>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="loadStats" class="btn btn-primary">🔄 Încarcă Statistici</button>
+                    </div>
+
+                    <div id="statsLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă statisticile...</p>
+                    </div>
+
+                    <div id="statsContent">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📈</div>
+                            <p>Apasă butonul de mai sus pentru a încărca statisticile</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Registration Tab -->
+            <section id="register" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Înregistrare Candidat Nou</h2>
+                    </div>
+
+                    <form id="registerForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nume">Nume *</label>
+                                <input type="text" id="nume" name="nume" required placeholder="Ex: Popescu">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="prenume">Prenume *</label>
+                                <input type="text" id="prenume" name="prenume" required placeholder="Ex: Ion">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cnp">CNP *</label>
+                                <input type="text" id="cnp" name="cnp" required pattern="[0-9]{13}" maxlength="13"
+                                    placeholder="Ex: 5020101123456">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="liceu">Liceu *</label>
+                                <input type="text" id="liceu" name="liceu" required placeholder="Ex: Colegiul Național">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="filiera">Filieră *</label>
+                                <select id="filiera" name="filiera" required>
+                                    <option value="">Selectează filiera</option>
+                                    <option value="Teoretică">Teoretică</option>
+                                    <option value="Vocațională">Vocațională</option>
+                                    <option value="Tehnologică">Tehnologică</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="specializare">Specializare *</label>
+                                <input type="text" id="specializare" name="specializare" required
+                                    placeholder="Ex: Matematică-Informatică">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="medie_generala">Medie Generală *</label>
+                                <input type="number" id="medie_generala" name="medie_generala" step="0.01" min="1"
+                                    max="10" required placeholder="Ex: 9.50">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nota1">Nota Probă 1 *</label>
+                                <input type="number" id="nota1" name="nota1" step="0.01" min="1" max="10" required
+                                    placeholder="Ex: 9.00">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nota2">Nota Probă 2 *</label>
+                                <input type="number" id="nota2" name="nota2" step="0.01" min="1" max="10" required
+                                    placeholder="Ex: 8.75">
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">✓ Înregistrează Candidat</button>
+                            <button type="reset" class="btn btn-secondary">✕ Resetează Formular</button>
+                        </div>
+                    </form>
+
+                    <div id="registerAlert" class="alert"></div>
+                </div>
+            </section>
+
+            <!-- Rankings Tab -->
+            <section id="ranking" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Clasament Candidați</h2>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="refreshRanking" class="btn btn-primary">🔄 Actualizează Clasament</button>
+
+                        <div class="custom-select-wrapper">
+                            <select id="filterLiceu" style="display: none;">
+                                <option value="">Toate Liceele</option>
+                            </select>
+                            <div class="custom-select" id="customFilterLiceu">
+                                <div class="custom-select__trigger">
+                                    <span class="trigger-text">Toate Liceele</span>
+                                    <div class="arrow"></div>
+                                </div>
+                                <div class="custom-options">
+                                    <div class="custom-option selected" data-value="">Toate Liceele</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="rankingLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă clasamentul...</p>
+                    </div>
+
+                    <div id="rankingContent">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <p>Apasă butonul de mai sus pentru a încărca clasamentul</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search Tab -->
+            <section id="search" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Căutare Candidat după CNP</h2>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" id="searchCnp" placeholder="Introduceți CNP-ul candidatului..."
+                            pattern="[0-9]{13}" maxlength="13">
+                        <button id="searchBtn" class="btn btn-primary">🔍 Caută</button>
+                    </div>
+
+                    <div id="searchLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se caută candidatul...</p>
+                    </div>
+
+                    <div id="searchAlert" class="alert"></div>
+
+                    <div id="candidateInfo"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 Sistem Admitere Liceu | Developed with ❤️</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -18,12 +18,18 @@ int main() {
 
     // calculam media de admitere
     c.computeMediaAdmitere();
+    
+    // raspuns HTTP in format JSON
+    cout << "Content-type: application/json\r\n\r\n";
+    
+    // verificam daca CNP-ul exista deja
+    if (cnpExists(params["cnp"])) {
+        cout << "{ \"status\": \"error\", \"message\": \"CNP deja existent\" }\n";
+        return 0;
+    }
 
     // salvam candidatul in fisier
     bool ok = appendCandidateToFile(c);
-
-    // raspuns HTTP in format JSON
-    cout << "Content-type: application/json\r\n\r\n";
 
     if (!ok) {
         cout << "{ \"status\": \"error\", \"message\": \"nu pot scrie in fisier\" }\n";

@@ -196,14 +196,26 @@ public:
     }
 };
 
-// ===================== FISIERUL CU CANDIDATI =====================
-
-// CGI-urile sunt in folderul cgi-bin, iar fisierul cu candidati este in ../data
-const string CANDIDATES_FILE = "../data/candidates.txt";
+// Functie pentru a gasi path-ul corect (compatibil cu Apache si Python http.server)
+inline string getCandidatesFilePath() {
+    // Apache: ruleaza din cgi-bin/, deci ../data/candidates.txt
+    // Python http.server: ruleaza din root, deci data/candidates.txt
+    
+    // Prima incercam path-ul pentru Apache
+    ifstream test("../data/candidates.txt");
+    if (test.good()) {
+        test.close();
+        return "../data/candidates.txt";
+    }
+    
+    // Daca nu merge, folosim path-ul pentru Python http.server
+    return "data/candidates.txt";
+}
 
 // adauga un candidat la finalul fisierului
 inline bool appendCandidateToFile(const Candidate& c) {
-    ofstream f(CANDIDATES_FILE.c_str(), ios::app);
+    string filePath = getCandidatesFilePath();
+    ofstream f(filePath.c_str(), ios::app);
     if (!f) return false;
     f << c.toFileLine() << "\n";
     return true;
@@ -211,7 +223,8 @@ inline bool appendCandidateToFile(const Candidate& c) {
 
 // incarca toti candidatii din fisier intr-un vector
 inline bool loadAllCandidates(vector<Candidate>& out) {
-    ifstream f(CANDIDATES_FILE.c_str());
+    string filePath = getCandidatesFilePath();
+    ifstream f(filePath.c_str());
     if (!f) return false;
 
     string line;
@@ -236,6 +249,12 @@ inline bool findCandidateByCnp(const string& cnp, Candidate& out) {
         }
     }
     return false;
+}
+
+// verifica daca exista deja un candidat cu CNP-ul dat
+inline bool cnpExists(const string& cnp) {
+    Candidate temp;
+    return findCandidateByCnp(cnp, temp);
 }
 
 // functie de comparatie pentru sortare descrescatoare dupa media de admitere
