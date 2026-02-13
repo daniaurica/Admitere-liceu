@@ -1,0 +1,10 @@
+Facultatea de Inginerie Electrică și Știința Calculatoarelor;5;8
+Facultatea de Inginerie Mecanică, Mecatronică și Management;3;5
+Facultatea de Inginerie Alimentară;2;4
+Facultatea de Silvicultură;2;3
+Facultatea de Litere și Științe ale Comunicării;3;5
+Facultatea de Istorie și Geografie;2;4
+Facultatea de Educație Fizică și Sport;2;3
+Facultatea de Științe Economice și Administrație Publică;4;6
+Facultatea de Drept și Științe Administrative;3;5
+Facultatea de Științe ale Educației;2;4

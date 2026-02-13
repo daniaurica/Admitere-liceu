@@ -1,4 +1,4 @@
-# Admitere Liceu - High School Admission System
+# Admitere Facultate - University Admission System
 
 A web-based admission management system built with C++ CGI backend and vanilla HTML/CSS/JavaScript frontend.
 
@@ -80,7 +80,7 @@ touch data/candidates.txt
 
 3. **Configure Apache virtual host:**
    
-   Create `/etc/apache2/sites-available/admitere-liceu.conf`:
+   Create `/etc/apache2/sites-available/admitere-facultate.conf`:
    ```apache
    <VirtualHost *:8080>
        DocumentRoot /path/to/Admitere-liceu/public
@@ -102,7 +102,7 @@ touch data/candidates.txt
 
 4. **Enable site and restart:**
    ```bash
-   sudo a2ensite admitere-liceu
+   sudo a2ensite admitere-facultate
    sudo systemctl restart apache2
    ```
 
@@ -129,8 +129,8 @@ Open your browser and navigate to:
 Register a new candidate.
 
 **Parameters:**
-- `nume`, `prenume`, `cnp`, `liceu`, `filiera`, `specializare`
-- `medie_generala`, `nota1`, `nota2` (numeric, 1-10)
+- `nume`, `prenume`, `cnp`, `facultate`, `domeniu`, `specializare`
+- `medie_bac`, `nota1`, `nota2` (numeric, 1-10)
 
 **Response:** JSON with status and calculated `mediaAdmitere`
 
@@ -142,7 +142,7 @@ Get all candidates sorted by admission score.
 ### GET /cgi-bin/candidate_sheet.cgi?cnp=XXXXXXXXXXXXX
 Get candidate information by CNP.
 
-**Response:** Plain text formatted candidate data
+**Response:** JSON formatted candidate data
 
 ## Usage
 

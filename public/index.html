@@ -4,32 +4,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admitere Liceu - Sistem de Gestionare</title>
+    <title>Admitere Facultate - Sistem de Gestionare</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div class="container">
+    <!-- ============ LOGIN / REGISTER OVERLAY ============ -->
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>🎓 Admitere Facultate</h1>
+                <p>Autentificare în Sistem</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginSection" class="auth-section">
+                <h2>Conectare</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required placeholder="email@exemplu.ro">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Parolă</label>
+                        <input type="password" id="loginPassword" required placeholder="Parola ta">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">🔑 Conectare</button>
+                </form>
+                <div id="loginAlert" class="alert"></div>
+                <p class="auth-switch">
+                    Nu ai cont? <a href="#" id="showRegister">Creează unul</a>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerUserSection" class="auth-section" style="display:none;">
+                <h2>Creare Cont Candidat</h2>
+                <form id="registerUserForm">
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input type="email" id="regEmail" required placeholder="email@exemplu.ro">
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Parolă</label>
+                        <input type="password" id="regPassword" required placeholder="Alege o parolă">
+                    </div>
+                    <div class="form-group">
+                        <label for="regCnp">CNP</label>
+                        <input type="text" id="regCnp" required pattern="[0-9]{13}" maxlength="13"
+                            placeholder="CNP-ul tău (13 cifre)">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✓ Creează Cont</button>
+                </form>
+                <div id="registerUserAlert" class="alert"></div>
+                <p class="auth-switch">
+                    Ai deja cont? <a href="#" id="showLogin">Conectează-te</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MAIN APPLICATION ============ -->
+    <div id="appContainer" class="container" style="display:none;">
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1>📚 Admitere Liceu</h1>
-                <p>Sistem de Gestionare a Candidaților</p>
+                <div class="header-top">
+                    <div>
+                        <h1>🎓 Admitere Facultate</h1>
+                        <p>Sistem de Gestionare a Candidaților</p>
+                    </div>
+                    <div class="user-info">
+                        <span id="userDisplay" class="user-badge"></span>
+                        <button id="logoutBtn" class="btn btn-secondary btn-sm">🚪 Deconectare</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Navigation Tabs -->
-            <nav class="tabs">
-                <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
-                <button class="tab-btn" data-tab="register">Înregistrare</button>
-                <button class="tab-btn" data-tab="ranking">Clasament</button>
-                <button class="tab-btn" data-tab="search">Căutare Candidat</button>
+            <nav class="tabs" id="navTabs">
+                <!-- Tabs are populated dynamically based on role -->
             </nav>
         </header>
 
         <!-- Main Content -->
         <main>
-            <!-- Dashboard Tab -->
-            <section id="dashboard" class="tab-content active">
+            <!-- Dashboard Tab (operator, admin) -->
+            <section id="dashboard" class="tab-content">
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">📊 Statistici Generale</h2>
@@ -51,9 +112,237 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Most Applied Faculty Section -->
+                <div class="card" id="facultyStatsCard" style="display:none;">
+                    <div class="card-header">
+                        <h2 class="card-title">🏫 Popularitatea Facultăților</h2>
+                    </div>
+                    <div id="facultyStatsContent"></div>
+                </div>
+
+                <!-- Filter by Faculty Section -->
+                <div class="card" id="facultyFilterCard" style="display:none;">
+                    <div class="card-header">
+                        <h2 class="card-title">🔍 Filtrare Candidați după Facultate</h2>
+                    </div>
+                    <div class="form-group" style="margin-bottom: var(--spacing-md);">
+                        <label for="dashboardFacultyFilter" class="form-label">Selectează Facultatea:</label>
+                        <select id="dashboardFacultyFilter" class="form-input">
+                            <option value="">-- Toate facultățile --</option>
+                        </select>
+                    </div>
+                    <div id="filteredCandidatesContent">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎓</div>
+                            <p>Selectează o facultate pentru a vedea candidații</p>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <!-- Registration Tab -->
+            <!-- My Data Tab (candidat) -->
+            <section id="mydata" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">👤 Datele Mele Personale</h2>
+                    </div>
+
+                    <div id="mydataLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă datele...</p>
+                    </div>
+
+                    <form id="mydataForm" style="display:none;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="myNume">Nume *</label>
+                                <input type="text" id="myNume" name="nume" required placeholder="Ex: Popescu">
+                            </div>
+                            <div class="form-group">
+                                <label for="myPrenume">Prenume *</label>
+                                <input type="text" id="myPrenume" name="prenume" required placeholder="Ex: Ion">
+                            </div>
+                            <div class="form-group">
+                                <label>CNP</label>
+                                <input type="text" id="myCnpDisplay" disabled>
+                            </div>
+                        </div>
+
+                        <div class="card" style="background: var(--bg-color); margin-top: var(--spacing-md);">
+                            <h3 style="margin-bottom: var(--spacing-md); color: var(--primary-color);">
+                                🎓 Opțiuni Facultate
+                            </h3>
+                            <p style="color: var(--text-secondary); margin-bottom: var(--spacing-md); font-size: 0.9rem;">
+                                Selectează facultățile la care dorești să te înscrii (maxim 15 opțiuni, în ordinea preferinței):
+                            </p>
+                            <div id="myFacultyOptionsContainer">
+                                <!-- Faculty option rows will be generated dynamically by JS -->
+                            </div>
+                            <button type="button" id="addFacultyOptionBtn" class="btn btn-secondary btn-sm" style="margin-top: var(--spacing-sm); display:none;">
+                                ➕ Adaugă opțiune
+                            </button>
+                        </div>
+
+                        <div class="card" style="background: var(--bg-color); margin-top: var(--spacing-md);">
+                            <h3 style="margin-bottom: var(--spacing-md); color: var(--text-secondary);">
+                                📋 Date Academice (completate de operator)
+                            </h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Media Bacalaureat</div>
+                                    <div class="info-value" id="myMedieDisplay">-</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Nota Probă 1</div>
+                                    <div class="info-value" id="myNota1Display">-</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Nota Probă 2</div>
+                                    <div class="info-value" id="myNota2Display">-</div>
+                                </div>
+                                <div class="info-item" style="grid-column: 1 / -1;">
+                                    <div class="info-label">Media de Admitere</div>
+                                    <div class="info-value" style="font-size: 1.75rem; color: var(--primary-color);"
+                                        id="myMediaAdmitereDisplay">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="myRepartizatCard" class="card" style="background: var(--bg-color); margin-top: var(--spacing-md); display:none;">
+                            <h3 style="margin-bottom: var(--spacing-md); color: var(--success-color);">
+                                🏆 Rezultat Repartizare
+                            </h3>
+                            <!-- Confirmed faculty -->
+                            <div id="myConfirmatSection" style="display:none; margin-bottom: var(--spacing-md);">
+                                <div class="info-item" style="background: #d4edda; padding: var(--spacing-md); border-radius: var(--radius); border: 2px solid var(--success-color);">
+                                    <div class="info-label" style="font-weight: bold; color: var(--success-color);">✅ Facultatea Confirmată</div>
+                                    <div class="info-value" style="font-size: 1.3rem; color: var(--success-color); margin-top: 0.3rem;"
+                                        id="myConfirmatDisplay">-</div>
+                                </div>
+                            </div>
+                            <!-- All available options -->
+                            <div id="myRepartizatOptions">
+                                <div class="info-label" style="margin-bottom: var(--spacing-sm);">Facultăți disponibile (te-ai încadrat la):</div>
+                                <div id="myRepartizatList"></div>
+                                <p style="color: var(--text-secondary); margin-top: var(--spacing-sm); font-size: 0.9rem;">
+                                    📌 Prezintă-te la facultatea dorită cu diploma pentru a confirma alegerea.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">💾 Salvează Datele Personale</button>
+                        </div>
+                    </form>
+
+                    <div id="mydataAlert" class="alert"></div>
+                </div>
+            </section>
+
+            <!-- Operator: Edit Candidate Tab -->
+            <section id="editcandidate" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">✏️ Editare Candidat</h2>
+                    </div>
+
+                    <!-- Search candidate by CNP first -->
+                    <div class="search-box">
+                        <input type="text" id="editSearchCnp"
+                            placeholder="Introduceți CNP-ul candidatului de editat..." pattern="[0-9]{13}"
+                            maxlength="13">
+                        <button id="editSearchBtn" class="btn btn-primary">🔍 Caută</button>
+                    </div>
+
+                    <div id="editSearchLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se caută candidatul...</p>
+                    </div>
+
+                    <div id="editSearchAlert" class="alert"></div>
+
+                    <form id="editCandidateForm" style="display:none;">
+                        <div class="form-grid">
+                            <div class="form-group" id="editNumeGroup">
+                                <label for="editNume">Nume</label>
+                                <input type="text" id="editNume" name="nume" placeholder="Nume candidat">
+                            </div>
+                            <div class="form-group" id="editPrenumeGroup">
+                                <label for="editPrenume">Prenume</label>
+                                <input type="text" id="editPrenume" name="prenume" placeholder="Prenume candidat">
+                            </div>
+                            <div class="form-group">
+                                <label>CNP</label>
+                                <input type="text" id="editCnpDisplay" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Admin: editable multi-option faculty rows -->
+                        <div id="editAdminFacultySection" style="display:none;">
+                            <h3 style="margin: var(--spacing-md) 0 var(--spacing-sm); color: var(--primary-color);">🎓 Opțiuni Facultăți</h3>
+                            <div id="editOptionsContainer"></div>
+                            <div class="btn-group" style="margin-top: var(--spacing-sm);">
+                                <button type="button" id="editAddOptionBtn" class="btn btn-primary" style="background: var(--success-color);">
+                                    ➕ Adaugă Opțiune
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Operator: read-only options display -->
+                        <div class="form-group" id="editOptiuniReadonly" style="grid-column: 1 / -1; display:none;">
+                            <label>Opțiunile candidatului</label>
+                            <div id="editOptiuniList" style="background: var(--bg-color); padding: var(--spacing-sm); border-radius: var(--radius); border: 1px solid var(--border-color);"></div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group" id="editMedieBacGroup">
+                                <label for="editMedieBac">Media Bacalaureat</label>
+                                <input type="number" id="editMedieBac" name="medie_bac" step="0.01" min="1"
+                                    max="10" placeholder="Ex: 9.50">
+                            </div>
+                            <div class="form-group" id="editNota1Group">
+                                <label for="editNota1">Nota Probă 1</label>
+                                <input type="number" id="editNota1" name="nota1" step="0.01" min="1" max="10"
+                                    placeholder="Ex: 9.00">
+                            </div>
+                            <div class="form-group" id="editNota2Group">
+                                <label for="editNota2">Nota Probă 2</label>
+                                <input type="number" id="editNota2" name="nota2" step="0.01" min="1" max="10"
+                                    placeholder="Ex: 8.75">
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">💾 Salvează Modificările</button>
+                        </div>
+                    </form>
+
+                    <!-- Confirm Faculty Section (shown after repartizare) -->
+                    <div id="confirmFacultySection" class="card" style="display:none; margin-top: var(--spacing-md); background: #fff3cd; border: 2px solid #ffc107;">
+                        <h3 style="margin-bottom: var(--spacing-md); color: #856404;">
+                            🎓 Confirmare Facultate
+                        </h3>
+                        <div id="confirmCurrentStatus" style="margin-bottom: var(--spacing-md);"></div>
+                        <div class="form-group">
+                            <label for="confirmFacultySelect">Selectați facultatea la care candidatul dorește să se înscrie:</label>
+                            <select id="confirmFacultySelect" style="width: 100%; padding: 0.6rem; border-radius: var(--radius); border: 1px solid var(--border-color);">
+                                <option value="">-- Selectează facultatea --</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="confirmFacultyBtn" class="btn btn-primary" style="background: var(--success-color);">
+                                ✅ Confirmă Facultatea
+                            </button>
+                        </div>
+                        <div id="confirmFacultyAlert" class="alert"></div>
+                    </div>
+
+                    <div id="editCandidateAlert" class="alert"></div>
+                </div>
+            </section>
+
+            <!-- Registration Tab (admin only - full registration) -->
             <section id="register" class="tab-content">
                 <div class="card">
                     <div class="card-header">
@@ -79,29 +368,28 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="liceu">Liceu *</label>
-                                <input type="text" id="liceu" name="liceu" required placeholder="Ex: Colegiul Național">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="filiera">Filieră *</label>
-                                <select id="filiera" name="filiera" required>
-                                    <option value="">Selectează filiera</option>
-                                    <option value="Teoretică">Teoretică</option>
-                                    <option value="Vocațională">Vocațională</option>
-                                    <option value="Tehnologică">Tehnologică</option>
+                                <label for="facultate">Facultate *</label>
+                                <select id="facultate" name="facultate" required>
+                                    <option value="">Selectează facultatea</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="specializare">Specializare *</label>
-                                <input type="text" id="specializare" name="specializare" required
-                                    placeholder="Ex: Matematică-Informatică">
+                                <label for="domeniu">Domeniu *</label>
+                                <input type="text" id="domeniu" name="domeniu" readonly required
+                                    placeholder="(se completează automat)">
                             </div>
 
                             <div class="form-group">
-                                <label for="medie_generala">Medie Generală *</label>
-                                <input type="number" id="medie_generala" name="medie_generala" step="0.01" min="1"
+                                <label for="specializare">Specializare *</label>
+                                <select id="specializare" name="specializare" required>
+                                    <option value="">Selectează specializarea</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="medie_bac">Media Bacalaureat *</label>
+                                <input type="number" id="medie_bac" name="medie_bac" step="0.01" min="1"
                                     max="10" required placeholder="Ex: 9.50">
                             </div>
 
@@ -128,6 +416,45 @@
                 </div>
             </section>
 
+            <!-- Manage Operators Tab (Admin Only) -->
+            <section id="operators" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Gestionare Operatori</h2>
+                    </div>
+
+                    <!-- Add Operator Form -->
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-color);">➕ Adaugă Operator Nou</h3>
+                    <form id="addOperatorForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="opEmail">Email *</label>
+                                <input type="email" id="opEmail" required placeholder="operator@exemplu.ro">
+                            </div>
+                            <div class="form-group">
+                                <label for="opPassword">Parolă *</label>
+                                <input type="password" id="opPassword" required placeholder="Parolă operator">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">✓ Creează Cont Operator</button>
+                            <button type="reset" class="btn btn-secondary">✕ Resetează</button>
+                        </div>
+                    </form>
+                    <div id="addOperatorAlert" class="alert"></div>
+
+                    <!-- Operators List -->
+                    <hr style="margin: 2rem 0; border-color: var(--border-color);">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-color);">📋 Operatori Existenți</h3>
+                    <button id="refreshOperators" class="btn btn-secondary btn-sm" style="margin-bottom: 1rem;">🔄 Actualizează Lista</button>
+                    <div id="operatorsLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă lista de operatori...</p>
+                    </div>
+                    <div id="operatorsList"></div>
+                </div>
+            </section>
+
             <!-- Rankings Tab -->
             <section id="ranking" class="tab-content">
                 <div class="card">
@@ -139,16 +466,16 @@
                         <button id="refreshRanking" class="btn btn-primary">🔄 Actualizează Clasament</button>
 
                         <div class="custom-select-wrapper">
-                            <select id="filterLiceu" style="display: none;">
-                                <option value="">Toate Liceele</option>
+                            <select id="filterFacultate" style="display: none;">
+                                <option value="">Toate Facultățile</option>
                             </select>
-                            <div class="custom-select" id="customFilterLiceu">
+                            <div class="custom-select" id="customFilterFacultate">
                                 <div class="custom-select__trigger">
-                                    <span class="trigger-text">Toate Liceele</span>
+                                    <span class="trigger-text">Toate Facultățile</span>
                                     <div class="arrow"></div>
                                 </div>
                                 <div class="custom-options">
-                                    <div class="custom-option selected" data-value="">Toate Liceele</div>
+                                    <div class="custom-option selected" data-value="">Toate Facultățile</div>
                                 </div>
                             </div>
                         </div>
@@ -168,7 +495,7 @@
                 </div>
             </section>
 
-            <!-- Search Tab -->
+            <!-- Search Tab (operator, admin) -->
             <section id="search" class="tab-content">
                 <div class="card">
                     <div class="card-header">
@@ -191,11 +518,133 @@
                     <div id="candidateInfo"></div>
                 </div>
             </section>
+
+            <!-- Facultati Suceava Tab (candidat, operator, admin) -->
+            <section id="facultati" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🏛️ Facultăți din Suceava</h2>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                            Universitatea Ștefan cel Mare din Suceava (USV)
+                        </p>
+                    </div>
+
+                    <div id="facultatiLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă lista de facultăți...</p>
+                    </div>
+
+                    <div id="facultatiContent">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🏛️</div>
+                            <p>Se încarcă facultățile...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Locuri Buget/Taxa Tab (operator, admin) -->
+            <section id="locuri" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🎟️ Locuri Buget / Taxă pe Facultăți</h2>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                            Configurați numărul de locuri disponibile la buget și taxă pentru fiecare facultate
+                        </p>
+                    </div>
+
+                    <div id="locuriLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se încarcă datele...</p>
+                    </div>
+
+                    <form id="locuriForm" style="display:none;">
+                        <div class="table-container">
+                            <table class="ranking-table" id="locuriTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Facultate</th>
+                                        <th>Domeniu</th>
+                                        <th>Locuri Buget</th>
+                                        <th>Locuri Taxă</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="locuriTableBody">
+                                    <!-- populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="btn-group" style="margin-top: var(--spacing-md);">
+                            <button type="submit" class="btn btn-primary">💾 Salvează Locurile</button>
+                        </div>
+                    </form>
+
+                    <div id="locuriAlert" class="alert"></div>
+                </div>
+            </section>
+
+            <!-- Repartizare Tab (operator & admin) -->
+            <section id="repartizare" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🏆 Repartizare Automată</h2>
+                        <p style="color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                            Repartizarea candidaților pe facultăți pe baza mediei de admitere și a opțiunilor alese
+                        </p>
+                    </div>
+
+                    <div class="card" style="background: #fff3cd; border: 1px solid #ffc107; margin-bottom: var(--spacing-md);">
+                        <p style="color: #856404;">
+                            ⚠️ <strong>Atenție!</strong> Repartizarea va calcula toate facultățile disponibile pentru fiecare candidat.
+                            Candidații cu media cea mai mare au prioritate. Se alocă mai întâi locuri la buget, apoi la taxă.
+                            După repartizare, candidații vin cu diploma și operatorul/adminul confirmă facultatea aleasă.
+                            Asigurați-vă că locurile buget/taxă sunt configurate corect înainte de a rula repartizarea.
+                        </p>
+                    </div>
+
+                    <div class="btn-group">
+                        <button id="runRepartizareBtn" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2rem;">
+                            🚀 Rulează Repartizarea
+                        </button>
+                    </div>
+
+                    <div id="repartizareLoading" class="loading">
+                        <div class="spinner"></div>
+                        <p>Se procesează repartizarea...</p>
+                    </div>
+
+                    <div id="repartizareAlert" class="alert"></div>
+
+                    <div id="repartizareResults" style="display:none; margin-top: var(--spacing-md);">
+                        <h3 style="margin-bottom: var(--spacing-md); color: var(--primary-color);">📋 Rezultate Repartizare</h3>
+                        <div class="table-container">
+                            <table class="ranking-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>CNP</th>
+                                        <th>Nume</th>
+                                        <th>Prenume</th>
+                                        <th>Media Admitere</th>
+                                        <th>Facultăți Repartizate</th>
+                                        <th>Nr. Opțiuni</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="repartizareTableBody">
+                                    <!-- populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->
         <footer class="footer">
-            <p>© 2026 Sistem Admitere Liceu | Developed with ❤️</p>
+            <p>© 2026 Sistem Admitere Facultate | Developed with ❤️</p>
         </footer>
     </div>
 

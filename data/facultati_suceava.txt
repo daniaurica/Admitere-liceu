@@ -1,0 +1,10 @@
+Facultatea de Inginerie Electrică și Știința Calculatoarelor;Inginerie;Calculatoare;Informatică;Electronică și Telecomunicații;Inginerie Electrică
+Facultatea de Inginerie Mecanică, Mecatronică și Management;Inginerie;Inginerie Mecanică;Mecatronică și Robotică;Inginerie Industrială;Management
+Facultatea de Inginerie Alimentară;Inginerie;Ingineria Produselor Alimentare;Controlul și Expertiza Produselor Alimentare
+Facultatea de Silvicultură;Silvicultură;Silvicultură;Exploatări Forestiere
+Facultatea de Litere și Științe ale Comunicării;Litere;Limba și Literatura Română;Limbi Moderne Aplicate;Științe ale Comunicării
+Facultatea de Istorie și Geografie;Științe Sociale;Istorie;Geografie;Relații Internaționale și Studii Europene
+Facultatea de Educație Fizică și Sport;Sport;Educație Fizică și Sport;Kinetoterapie
+Facultatea de Științe Economice și Administrație Publică;Economie;Economia Comerțului, Turismului și Serviciilor;Finanțe și Bănci;Contabilitate și Informatică de Gestiune;Administrație Publică
+Facultatea de Drept și Științe Administrative;Drept;Drept;Științe Administrative
+Facultatea de Științe ale Educației;Educație;Pedagogia Învățământului Primar și Preșcolar;Psihopedagogie Specială

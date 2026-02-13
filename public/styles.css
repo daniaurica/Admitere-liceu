@@ -520,7 +520,7 @@ tbody tr:hover {
 /* ===== Statistics Dashboard ===== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
 }
@@ -573,8 +573,8 @@ tbody tr:hover {
 
 .distribution-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
     margin-top: var(--spacing-md);
 }
 
@@ -610,6 +610,28 @@ tbody tr:hover {
     background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
     border-radius: 4px;
     transition: width 0.6s ease;
+}
+
+/* ===== Status Badges ===== */
+.status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-badge.status-active {
+    background: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-badge.status-pending {
+    background: rgba(158, 158, 158, 0.15);
+    color: #757575;
+    border: 1px solid rgba(158, 158, 158, 0.3);
 }
 
 /* ===== Responsive Design ===== */
@@ -790,4 +812,352 @@ tbody tr:hover {
     color: var(--primary-color);
     font-weight: 700;
     background-color: rgba(74, 144, 226, 0.1);
+}
+
+/* ===== Auth Overlay ===== */
+.auth-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--spacing-lg);
+}
+
+.auth-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 450px;
+    overflow: hidden;
+}
+
+.auth-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.auth-header h1 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xs);
+}
+
+.auth-header p {
+    opacity: 0.9;
+    font-size: var(--font-size-sm);
+}
+
+.auth-section {
+    padding: var(--spacing-lg);
+}
+
+.auth-section h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.auth-section .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.auth-section .form-group input,
+.auth-section .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    transition: all 0.3s ease;
+    font-family: var(--font-family);
+}
+
+.auth-section .form-group input:focus,
+.auth-section .form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: var(--spacing-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Header with User Info ===== */
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.user-badge {
+    color: white;
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.role-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-tag.role-candidat {
+    background: rgba(92, 184, 92, 0.3);
+    color: #d4edda;
+}
+
+.role-tag.role-operator {
+    background: rgba(240, 173, 78, 0.3);
+    color: #fff3cd;
+}
+
+.role-tag.role-admin {
+    background: rgba(217, 83, 79, 0.3);
+    color: #f8d7da;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: var(--font-size-sm);
+}
+
+/* ===== Responsive adjustments for auth ===== */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .user-info {
+        justify-content: center;
+    }
+
+    .auth-card {
+        margin: var(--spacing-sm);
+    }
+}
+
+/* ===== Facultăți Suceava Grid ===== */
+.facultati-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.facultate-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.facultate-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.facultate-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.facultate-icon {
+    font-size: 1.5rem;
+}
+
+.facultate-name {
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    color: var(--primary-color);
+}
+
+.facultate-domeniu {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.facultate-specializari {
+    font-size: var(--font-size-sm);
+}
+
+.facultate-specializari strong {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.badge {
+    display: inline-block;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .facultati-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== Operators List ===== */
+.operators-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.operator-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.75rem 1rem;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: background 0.2s;
+}
+
+.operator-item:hover {
+    background: #eef3f9;
+}
+
+.operator-index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.operator-email {
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* ===== Faculty Option Rows (Candidat) ===== */
+.faculty-option-row {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    transition: border-color 0.2s;
+}
+
+.faculty-option-row:hover {
+    border-color: var(--primary-light);
+}
+
+.faculty-option-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xs);
+}
+
+.faculty-option-number {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.btn-remove-option {
+    background: none;
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    padding: 0;
+    line-height: 1;
+}
+
+.btn-remove-option:hover {
+    background: var(--error-color);
+    color: #fff;
+}
+
+/* ===== Locuri Buget / Taxa ===== */
+
+.locuri-input {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    background: #fff;
+    transition: border-color 0.2s;
+}
+
+.locuri-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+/* ===== Repartizare Results ===== */
+
+#repartizareResults .ranking-table td {
+    vertical-align: middle;
+}
+
+#repartizareResults .ranking-table tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.02);
 }

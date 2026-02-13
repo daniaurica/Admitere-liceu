@@ -9,10 +9,10 @@ int main() {
     c.setNume(params["nume"]);
     c.setPrenume(params["prenume"]);
     c.setCnp(params["cnp"]);
-    c.setLiceu(params["liceu"]);
-    c.setFiliera(params["filiera"]);
+    c.setFacultate(params["facultate"]);
+    c.setDomeniu(params["domeniu"]);
     c.setSpecializare(params["specializare"]);
-    c.setMedieGenerala(atof(params["medie_generala"].c_str()));
+    c.setMedieBac(atof(params["medie_bac"].c_str()));
     c.setNota1(atof(params["nota1"].c_str()));
     c.setNota2(atof(params["nota2"].c_str()));
 

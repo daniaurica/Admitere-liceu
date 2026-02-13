@@ -26,10 +26,13 @@ int main() {
         cout << "      \"cnp\": \"" << c.getCnp() << "\",\n";
         cout << "      \"nume\": \"" << c.getNume() << "\",\n";
         cout << "      \"prenume\": \"" << c.getPrenume() << "\",\n";
-        cout << "      \"liceu\": \"" << c.getLiceu() << "\",\n";
-        cout << "      \"filiera\": \"" << c.getFiliera() << "\",\n";
-        cout << "      \"specializare\": \"" << c.getSpecializare() << "\",\n";
-        cout << "      \"mediaAdmitere\": " << c.getMediaAdmitere() << "\n";
+        cout << "      \"facultate\": \"" << jsonEscape(c.getFacultate()) << "\",\n";
+        cout << "      \"domeniu\": \"" << jsonEscape(c.getDomeniu()) << "\",\n";
+        cout << "      \"specializare\": \"" << jsonEscape(c.getSpecializare()) << "\",\n";
+        cout << "      \"medieBac\": " << c.getMedieBac() << ",\n";
+        cout << "      \"mediaAdmitere\": " << c.getMediaAdmitere() << ",\n";
+        cout << "      \"repartizat\": \"" << jsonEscape(c.getRepartizat()) << "\",\n";
+        cout << "      \"confirmat\": \"" << jsonEscape(c.getConfirmat()) << "\"\n";
         cout << "    }";
         if (i + 1 < v.size()) cout << ",";
         cout << "\n";
