@@ -6,44 +6,42 @@ RUN apt-get update && apt-get install -y \
     make \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /var/www/admitere
+WORKDIR /var/www/html
 
 COPY . .
 
-RUN cp public/* /var/www/admitere/
+RUN cp public/* /var/www/html/
 
 RUN make
+
 RUN chmod +x cgi-bin/*.cgi
 RUN chmod -R 777 data
 
+RUN mkdir -p /usr/lib/cgi-bin
+RUN cp cgi-bin/*.cgi /usr/lib/cgi-bin/
+
 RUN a2enmod cgi
 
-RUN cat > /etc/apache2/sites-available/admitere.conf <<'EOF'
-<VirtualHost *:8080>
-    DocumentRoot /var/www/admitere
+RUN cat > /etc/apache2/sites-available/000-default.conf <<EOF
+<VirtualHost *:80>
+    DocumentRoot /var/www/html
 
-    <Directory /var/www/admitere>
-        Options Indexes FollowSymLinks
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI
+        Require all granted
+        AddHandler cgi-script .cgi
+    </Directory>
+
+    <Directory "/var/www/html">
         AllowOverride None
         Require all granted
     </Directory>
-
-    ScriptAlias /cgi-bin/ /var/www/admitere/cgi-bin/
-
-    <Directory /var/www/admitere/cgi-bin/>
-        Options +ExecCGI
-        AddHandler cgi-script .cgi
-        Require all granted
-    </Directory>
-
-    ErrorLog /proc/self/fd/2
-    CustomLog /proc/self/fd/1 combined
 </VirtualHost>
 EOF
 
-RUN a2dissite 000-default.conf
-RUN a2ensite admitere.conf
+EXPOSE 80
 
-EXPOSE 8080
-
-CMD sed -i "s/Listen .*/Listen ${PORT:-8080}/" /etc/apache2/ports.conf && apachectl -D FOREGROUND
+CMD apachectl -D FOREGROUND
