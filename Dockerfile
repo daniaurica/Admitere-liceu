@@ -20,6 +20,9 @@ RUN chmod -R 777 data
 RUN mkdir -p /usr/lib/cgi-bin
 RUN cp cgi-bin/*.cgi /usr/lib/cgi-bin/
 
+RUN mkdir -p /usr/lib/data
+RUN cp data/* /usr/lib/data/
+
 RUN a2enmod cgi
 
 RUN cat > /etc/apache2/sites-available/000-default.conf <<EOF
@@ -39,6 +42,9 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<EOF
         AllowOverride None
         Require all granted
     </Directory>
+
+    ErrorLog /proc/self/fd/2
+    CustomLog /proc/self/fd/1 combined
 </VirtualHost>
 EOF
 
