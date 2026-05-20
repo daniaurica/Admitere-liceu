@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
     apache2 \
+    curl \
     g++ \
     make \
     && rm -rf /var/lib/apt/lists/*
@@ -59,4 +60,4 @@ EOF
 
 EXPOSE 80
 
-CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on PORT=${PORT}\"; sed -i \"s/^Listen .*/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apache2ctl configtest && exec apache2ctl -DFOREGROUND"]
+CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on 0.0.0.0:${PORT}\"; sed -i \"s/^Listen .*/Listen 0.0.0.0:${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apache2ctl configtest || exit 1; apache2ctl -DFOREGROUND & apache_pid=$!; sleep 2; curl -fsS \"http://127.0.0.1:${PORT}/\" >/dev/null && echo \"Apache local probe OK\"; wait \"$apache_pid\""]
