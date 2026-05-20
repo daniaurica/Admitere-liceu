@@ -1,4 +1,3 @@
-# redeploy trigger
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
@@ -17,7 +16,7 @@ RUN chmod -R 777 data
 
 RUN a2enmod cgi
 
-RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
+RUN cat > /etc/apache2/sites-available/admitere.conf <<'EOF'
 <VirtualHost *:8080>
     DocumentRoot /var/www/admitere/public
 
@@ -39,6 +38,9 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
     CustomLog /proc/self/fd/1 combined
 </VirtualHost>
 EOF
+
+RUN a2dissite 000-default.conf
+RUN a2ensite admitere.conf
 
 EXPOSE 8080
 
