@@ -10,7 +10,7 @@ WORKDIR /var/www/admitere
 
 COPY . .
 
-RUN cp public/* .
+RUN cp public/* /var/www/admitere/
 
 RUN make
 RUN chmod +x cgi-bin/*.cgi
