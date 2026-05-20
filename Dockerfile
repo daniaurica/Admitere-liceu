@@ -59,4 +59,4 @@ EOF
 
 EXPOSE 80
 
-CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on PORT=${PORT}\"; sed -i \"s/^Listen .*/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apachectl -D FOREGROUND"]
+CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on PORT=${PORT}\"; sed -i \"s/^Listen .*/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apache2ctl configtest && exec apache2ctl -DFOREGROUND"]
