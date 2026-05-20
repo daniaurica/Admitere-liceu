@@ -30,10 +30,12 @@ RUN chmod 666 /usr/lib/data/repartizare.txt
 RUN chmod 666 /usr/lib/data/locuri_facultati.txt
 RUN chmod 666 /usr/lib/data/facultati_suceava.txt
 
-RUN a2enmod cgi
+RUN a2enmod cgid
 
-RUN cat > /etc/apache2/sites-available/000-default.conf <<EOF
-<VirtualHost *:80>
+RUN sed -i 's/^Listen 80$/Listen ${PORT}/' /etc/apache2/ports.conf
+
+RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
+<VirtualHost *:${PORT}>
     DocumentRoot /var/www/html
 
     ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
@@ -57,4 +59,4 @@ EOF
 
 EXPOSE 80
 
-CMD apachectl -D FOREGROUND
+CMD ["sh", "-c", "export PORT=${PORT:-80}; apachectl -D FOREGROUND"]

@@ -1,6 +1,31 @@
 // ===== Configuration =====
 const API_BASE = '/cgi-bin';
 
+async function parseJsonResponse(response) {
+    const contentType = response.headers.get('content-type') || '';
+    const text = await response.text();
+
+    if (!response.ok) {
+        let detail = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        if (contentType.includes('application/json') && text) {
+            try {
+                const parsed = JSON.parse(text);
+                detail = parsed.message || detail;
+            } catch (e) {
+                // Keep the plain response preview below.
+            }
+        }
+        throw new Error(`Server error ${response.status}${detail ? `: ${detail}` : ''}`);
+    }
+
+    if (!contentType.includes('application/json')) {
+        const preview = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 160);
+        throw new Error(`Raspuns invalid de la server${preview ? `: ${preview}` : ''}`);
+    }
+
+    return JSON.parse(text);
+}
+
 // ===== Global Faculty Data (loaded from server) =====
 let facultatiSuceava = [];
 
@@ -193,7 +218,7 @@ function initAuthForms() {
                 body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 setCurrentUser(data.user);
@@ -229,7 +254,7 @@ function initAuthForms() {
                 body: body
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 // Auto-login after successful registration
@@ -288,7 +313,7 @@ function initMyDataSection() {
                 body: body
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 showAlert(alert, '✓ Datele personale au fost salvate cu succes!', 'success');
@@ -315,7 +340,7 @@ async function loadMyData() {
 
     try {
         const response = await fetch(`${API_BASE}/candidate_sheet.cgi?cnp=${encodeURIComponent(user.cnp)}&role=candidat`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
 
@@ -660,7 +685,7 @@ function initEditCandidateSection(role) {
                 body: body
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 showAlert(alert, '✓ Candidat actualizat cu succes! Media de admitere: ' + data.candidate.mediaAdmitere.toFixed(2), 'success');
@@ -704,7 +729,7 @@ function initEditCandidateSection(role) {
                     body: body
                 });
 
-                const data = await response.json();
+                const data = await parseJsonResponse(response);
 
                 if (data.status === 'ok') {
                     showAlert(confirmAlert, `✅ ${data.message}: ${data.confirmat}`, 'success');
@@ -855,7 +880,7 @@ async function loadCandidateForEdit(role) {
 
     try {
         const response = await fetch(`${API_BASE}/candidate_sheet.cgi?cnp=${encodeURIComponent(cnp)}&role=${encodeURIComponent(role)}`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
 
@@ -982,7 +1007,7 @@ async function loadStatistics() {
             throw new Error('Eroare la încărcarea datelor');
         }
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
 
@@ -1293,7 +1318,7 @@ function initRegisterForm() {
 
             if (!response.ok) throw new Error('Eroare la comunicarea cu serverul');
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 showAlert(alert,
@@ -1336,7 +1361,7 @@ async function loadRankings() {
 
         if (!response.ok) throw new Error('Eroare la încărcarea clasamentului');
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
 
@@ -1561,7 +1586,7 @@ async function searchCandidate() {
         const user = getCurrentUser();
         const role = user ? user.role : '';
         const response = await fetch(`${API_BASE}/candidate_sheet.cgi?cnp=${encodeURIComponent(cnp)}&role=${encodeURIComponent(role)}`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
 
@@ -1685,7 +1710,7 @@ function initOperatorsSection() {
                 body: body
             });
 
-            const data = await response.json();
+            const data = await parseJsonResponse(response);
 
             if (data.status === 'ok') {
                 showAlert(alert, `✓ Cont operator creat cu succes pentru ${email}!`, 'success');
@@ -1718,7 +1743,7 @@ async function loadOperatorsList() {
 
     try {
         const response = await fetch(`${API_BASE}/get_users.cgi?caller_role=${encodeURIComponent(user.role)}&role=operator`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         if (loading) loading.classList.remove('show');
 
@@ -1763,7 +1788,7 @@ async function loadOperatorsList() {
 async function deleteOperator(userId, email) {
     if (!confirm(`Sigur doriți să ștergeți operatorul "${email}"?`)) return;
     try {
-        const user = JSON.parse(localStorage.getItem('user'));
+        const user = getCurrentUser();
         const params = new URLSearchParams();
         params.append('user_id', userId);
         params.append('caller_role', user.role);
@@ -1772,7 +1797,7 @@ async function deleteOperator(userId, email) {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString()
         });
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         if (data.status === 'ok') {
             showNotification('Operator șters cu succes!', 'success');
             loadOperatorsList();
@@ -1789,7 +1814,7 @@ async function deleteOperator(userId, email) {
 async function loadFacultatiData() {
     try {
         const response = await fetch(`${API_BASE}/get_facultati.cgi`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
         if (data.status === 'ok' && data.facultati) {
             facultatiSuceava = data.facultati;
             populateFacultyDropdowns();
@@ -1941,7 +1966,7 @@ async function loadLocuri() {
 
     try {
         const response = await fetch(`${API_BASE}/get_locuri.cgi`);
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
         form.style.display = 'block';
@@ -2001,7 +2026,7 @@ async function saveLocuri() {
             body: body
         });
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         if (data.status === 'ok') {
             showAlert(alert, `✓ ${data.message} (${data.count} facultăți)`, 'success');
@@ -2051,7 +2076,7 @@ async function runRepartizare() {
             body: body
         });
 
-        const data = await response.json();
+        const data = await parseJsonResponse(response);
 
         loading.classList.remove('show');
         if (btn) btn.disabled = false;
