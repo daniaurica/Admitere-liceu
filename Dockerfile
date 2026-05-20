@@ -17,7 +17,7 @@ RUN chmod -R 777 data
 RUN a2enmod cgi
 
 RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
-<VirtualHost *:${PORT}>
+<VirtualHost *:8080>
     DocumentRoot /var/www/admitere/public
 
     <Directory /var/www/admitere/public>
@@ -39,8 +39,6 @@ RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
 </VirtualHost>
 EOF
 
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
-
 EXPOSE 8080
 
-CMD ["sh", "-c", "export PORT=${PORT:-8080} && envsubst < /etc/apache2/sites-available/000-default.conf > /tmp/000-default.conf && cp /tmp/000-default.conf /etc/apache2/sites-available/000-default.conf && sed -i \"s/Listen .*/Listen ${PORT}/\" /etc/apache2/ports.conf && apachectl -D FOREGROUND"]
+CMD sed -i "s/Listen .*/Listen ${PORT:-8080}/" /etc/apache2/ports.conf && apachectl -D FOREGROUND
