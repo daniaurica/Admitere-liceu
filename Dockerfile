@@ -23,6 +23,13 @@ RUN cp cgi-bin/*.cgi /usr/lib/cgi-bin/
 RUN mkdir -p /usr/lib/data
 RUN cp data/* /usr/lib/data/
 
+RUN chmod -R 777 /usr/lib/data
+RUN chmod 666 /usr/lib/data/users.txt
+RUN chmod 666 /usr/lib/data/candidates.txt
+RUN chmod 666 /usr/lib/data/repartizare.txt
+RUN chmod 666 /usr/lib/data/locuri_facultati.txt
+RUN chmod 666 /usr/lib/data/facultati_suceava.txt
+
 RUN a2enmod cgi
 
 RUN cat > /etc/apache2/sites-available/000-default.conf <<EOF
