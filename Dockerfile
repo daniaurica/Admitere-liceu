@@ -10,6 +10,8 @@ WORKDIR /var/www/admitere
 
 COPY . .
 
+RUN cp public/* .
+
 RUN make
 RUN chmod +x cgi-bin/*.cgi
 RUN chmod -R 777 data
@@ -18,9 +20,9 @@ RUN a2enmod cgi
 
 RUN cat > /etc/apache2/sites-available/admitere.conf <<'EOF'
 <VirtualHost *:8080>
-    DocumentRoot /var/www/admitere/public
+    DocumentRoot /var/www/admitere
 
-    <Directory /var/www/admitere/public>
+    <Directory /var/www/admitere>
         Options Indexes FollowSymLinks
         AllowOverride None
         Require all granted
