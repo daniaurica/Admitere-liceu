@@ -32,10 +32,10 @@ RUN chmod 666 /usr/lib/data/facultati_suceava.txt
 
 RUN a2enmod cgid
 
-RUN sed -i 's/^Listen 80$/Listen ${PORT}/' /etc/apache2/ports.conf
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
-<VirtualHost *:${PORT}>
+<VirtualHost *:80>
     DocumentRoot /var/www/html
 
     ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
@@ -59,4 +59,4 @@ EOF
 
 EXPOSE 80
 
-CMD ["sh", "-c", "export PORT=${PORT:-80}; apachectl -D FOREGROUND"]
+CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on PORT=${PORT}\"; sed -i \"s/^Listen .*/Listen ${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apachectl -D FOREGROUND"]
