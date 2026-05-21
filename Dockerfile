@@ -2,62 +2,39 @@ FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
     apache2 \
-    curl \
     g++ \
     make \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /var/www/html
+WORKDIR /var/www/admitere
 
 COPY . .
 
-RUN cp public/* /var/www/html/
-
 RUN make
-
 RUN chmod +x cgi-bin/*.cgi
-RUN chmod -R 777 data
 
-RUN mkdir -p /usr/lib/cgi-bin
-RUN cp cgi-bin/*.cgi /usr/lib/cgi-bin/
-
-RUN mkdir -p /usr/lib/data
-RUN cp data/* /usr/lib/data/
-
-RUN chmod -R 777 /usr/lib/data
-RUN chmod 666 /usr/lib/data/users.txt
-RUN chmod 666 /usr/lib/data/candidates.txt
-RUN chmod 666 /usr/lib/data/repartizare.txt
-RUN chmod 666 /usr/lib/data/locuri_facultati.txt
-RUN chmod 666 /usr/lib/data/facultati_suceava.txt
-
-RUN a2enmod cgid
-
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+RUN a2enmod cgi
 
 RUN cat > /etc/apache2/sites-available/000-default.conf <<'EOF'
 <VirtualHost *:80>
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/admitere/public
 
-    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-
-    <Directory "/usr/lib/cgi-bin">
+    <Directory /var/www/admitere/public>
+        Options Indexes FollowSymLinks
         AllowOverride None
+        Require all granted
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /var/www/admitere/cgi-bin/
+
+    <Directory /var/www/admitere/cgi-bin>
         Options +ExecCGI
-        Require all granted
         AddHandler cgi-script .cgi
-    </Directory>
-
-    <Directory "/var/www/html">
-        AllowOverride None
         Require all granted
     </Directory>
-
-    ErrorLog /proc/self/fd/2
-    CustomLog /proc/self/fd/1 combined
 </VirtualHost>
 EOF
 
 EXPOSE 80
 
-CMD ["sh", "-c", "PORT=${PORT:-80}; echo \"Starting Apache on 0.0.0.0:${PORT}\"; sed -i \"s/^Listen .*/Listen 0.0.0.0:${PORT}/\" /etc/apache2/ports.conf; sed -i \"s/<VirtualHost \\*:[0-9][0-9]*>/<VirtualHost *:${PORT}>/\" /etc/apache2/sites-available/000-default.conf; apache2ctl configtest || exit 1; apache2ctl -DFOREGROUND & apache_pid=$!; sleep 2; curl -fsS \"http://127.0.0.1:${PORT}/\" >/dev/null && echo \"Apache local probe OK\"; wait \"$apache_pid\""]
+CMD ["apachectl", "-D", "FOREGROUND"]
